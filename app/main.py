@@ -24,3 +24,10 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 def serve_homepage():
     """Serve the main HTML page."""
     return FileResponse(static_dir / "index.html")
+
+if __name__ == "__main__":
+    import uvicorn
+    import os
+    port = int(os.getenv("DATABRICKS_APP_PORT", "8000"))
+    uvicorn.run(app, host="0.0.0.0", port=port)
+
