@@ -1,4 +1,5 @@
 import os
+import base64
 from dotenv import load_dotenv
 
 # Load .env file for local development
@@ -13,7 +14,12 @@ if not LAKEBASE_SECRET_KEY:
         from databricks.sdk import WorkspaceClient
         w = WorkspaceClient()
         secret_value = w.secrets.get_secret(scope="app-secrets", key="lakebase-connection-string")
-        LAKEBASE_SECRET_KEY = secret_value.value
+        
+        # Databricks Secrets API returns base64-encoded values
+        # Decode it to get the plain text connection string
+        encoded_value = secret_value.value
+        LAKEBASE_SECRET_KEY = base64.b64decode(encoded_value).decode('utf-8')
+        
     except Exception as e:
         raise ValueError(
             f"Could not retrieve database connection string. "
